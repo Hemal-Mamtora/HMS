@@ -10,11 +10,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.nio.charset.MalformedInputException;
+
 public class Sign_up extends AppCompatActivity {
     DBHelper myDB;
     EditText name,mail,pass,sex,weight,height,age;
     Button registerButton,viewButton;
-
+    Sign_up thisInstance = this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -33,6 +35,7 @@ public class Sign_up extends AppCompatActivity {
         age = (EditText) findViewById(R.id.etAge);
         addData();
         viewAll();
+       // register();
         //registerButton.setOnClickListener(new View.OnClickListener() {
          //   public void onClick(View v) {
             //    startActivity(new Intent(Sign_up.this, HomePage.class));
@@ -40,12 +43,21 @@ public class Sign_up extends AppCompatActivity {
        // });
 
     }
+   // public void register() {
+
+      /*  registerButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                startActivity(new Intent(Sign_up.this, LoginActivity.class));
+            }
+        });*/
+  //  }
     public void addData(){
         registerButton.setOnClickListener(
                 new View.OnClickListener(){
                     @Override
                     public void onClick(View v){
                         boolean isInserted = myDB.insertData(
+                                thisInstance,
                                 name.getText().toString(),
                                 mail.getText().toString(),
                                 pass.getText().toString(),
@@ -54,12 +66,16 @@ public class Sign_up extends AppCompatActivity {
                                 weight.getText().toString(),
                                 height.getText().toString()
                         );
-                        if(isInserted)
+                        if(isInserted) {
                             Toast.makeText(Sign_up.this, "Registered", Toast.LENGTH_SHORT).show();
+                        }
                         else
                             Toast.makeText(Sign_up.this, "Not Registered", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(Sign_up.this, LoginActivity.class));
                     }
                 }
+
+
         );
     }
     public void viewAll(){

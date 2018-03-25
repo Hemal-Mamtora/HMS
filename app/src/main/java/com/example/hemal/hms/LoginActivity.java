@@ -50,7 +50,12 @@ import static android.Manifest.permission.READ_CONTACTS;
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
-
+    DBHelper helper=new DBHelper(this);
+    Button email_sign_in_button;
+    Button sign_up_button;
+    SQLiteDatabase db;
+    Cursor cursor;
+    EditText _txtEmail, _txtPass;
     /**
      * Id to identity READ_CONTACTS permission request.
      */
@@ -81,42 +86,78 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
+        sign_up_button = (Button) findViewById(R.id.sign_up_button);
+        email_sign_in_button = (Button) findViewById(R.id.email_sign_in_button);
 
-        mPasswordView = (EditText) findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
-            }
-        });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
-        mEmailSignInButton.setOnClickListener(new OnClickListener(){
-            public void onClick(View v){
-                startActivity(new Intent(LoginActivity.this, HomePage.class));
-            }
-        });
+        //mPasswordView = (EditText) findViewById(R.id.password);
+        //mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+          //  @Override
+            //public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+              //  if (id == R.id.login || id == EditorInfo.IME_NULL) {
 
-        Button sign_up_button = (Button) findViewById(R.id.sign_up_button);
-        sign_up_button.setOnClickListener(new OnClickListener(){
-            public void onClick(View v){
-                startActivity(new Intent(LoginActivity.this, Sign_up.class));
-            }
-        });
+//                    return true;
+  //              }
+    //            return false;
+      //      }
+        //});
+        //mLoginFormView = findViewById(R.id.login_form);
+        //mProgressView = findViewById(R.id.login_progress);
+        //
+        signin();
 
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+        signup();
     }
+
+    public void signin()   {
+
+        email_sign_in_button.setOnClickListener(
+
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                            try {
+
+                                if (v.getId() == R.id.email_sign_in_button) {
+                                    db = helper.getReadableDatabase();
+
+                                    EditText a = (EditText) findViewById(R.id.email);
+
+                                    String str = a.getText().toString();
+                                    EditText b = (EditText) findViewById(R.id.password);
+                                    String pass = b.getText().toString();
+                                    String password = helper.searchPass(str);
+                                    if (pass.equals(password)) {
+                                        Intent i = new Intent(LoginActivity.this, HomePage.class);
+                                        //   i.putExtra("Email",str);
+                                        startActivity(i);
+                                    } else
+                                        Toast.makeText(LoginActivity.this, "Username and password dont match", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            catch(Exception e)
+                            {
+                                Toast.makeText(LoginActivity.this, "Exception: "+e, Toast.LENGTH_SHORT).show();
+                            }
+
+                    }
+                }
+        );
+
+    }
+
+                    public void signup() {
+
+            sign_up_button.setOnClickListener(new OnClickListener() {
+                public void onClick(View v) {
+                    startActivity(new Intent(LoginActivity.this, Sign_up.class));
+                }
+            });
+        }
+
+
+
 
     private void populateAutoComplete() {
         if (!mayRequestContacts()) {
